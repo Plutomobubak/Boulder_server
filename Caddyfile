@@ -1,4 +1,4 @@
-localhost:443 {
-    tls internal
+called-guidelines.gl.at.ply.gg {
     reverse_proxy app:8000
+    tls blahnik.tomas@gmail.com
 }
