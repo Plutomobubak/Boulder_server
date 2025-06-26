@@ -2,7 +2,7 @@ import uuid
 from typing import Optional, List
 from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, status, Body, Form, Query, Request
 from fastapi.staticfiles import StaticFiles
-from starlette.middleware.proxy_headers import ProxyHeadersMiddleware
+from fastapi_proxiedheadersmiddleware import ProxiedHeadersMiddleware
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_
 from fastapi.security import OAuth2PasswordRequestForm
@@ -19,7 +19,7 @@ from db import engine, Base
 
 from util import get_db
 app = FastAPI()
-app.add_middleware(ProxyHeadersMiddleware)
+app.add_middleware(ProxiedHeadersMiddleware)
 
 @app.on_event("startup")
 def create_tables():
