@@ -28,7 +28,7 @@ services:
           - internal
   cloudflared:
       image: cloudflare/cloudflared:latest
-      command: tunnel --no-autoupdate --url http://caddy:443
+      command: tunnel --no-autoupdate --url https://caddy:443
       environment:
         - TUNNEL_TOKEN=${TUNNEL_TOKEN}
       restart: unless-stopped
