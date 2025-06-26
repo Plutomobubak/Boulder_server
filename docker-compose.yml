@@ -12,6 +12,8 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/db
       - SELENIUM_HEADLESS=true
+    networks:
+          - internal
   caddy:
     image: caddy:2
     ports:
@@ -22,6 +24,16 @@ services:
       - caddy_config:/config
     depends_on:
       - app
+    networks:
+          - internal
+  cloudflared:
+      image: cloudflare/cloudflared:latest
+      command: tunnel --no-autoupdate --url http://caddy:443
+      environment:
+        - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+      restart: unless-stopped
+      networks:
+        - internal
   db:
     image: postgres:15
     environment:
@@ -37,3 +49,7 @@ volumes:
   pgdata:
   caddy_data:
   caddy_config:
+
+networks:
+  internal:
+    driver: bridge

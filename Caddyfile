@@ -1,3 +1,4 @@
-called-guidelines.gl.at.ply.gg {
+:443 {
     reverse_proxy app:8000
+    tls internal
 }
