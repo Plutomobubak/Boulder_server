@@ -2,7 +2,7 @@ import uuid
 from typing import Optional, List
 from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, status, Body, Form, Query, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.proxyheaders import ProxyHeadersMiddleware
+from starlette.middleware.proxy_headers import ProxyHeadersMiddleware
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_
 from fastapi.security import OAuth2PasswordRequestForm
