@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
+from datetime import datetime
 
 class UserBase(BaseModel):
     username: str
@@ -32,6 +33,7 @@ class BoulderBase(BaseModel):
     image_path: str
     author: UserResponse
     points: Optional[List[Dict[str, Any]]] = None
+    timestamp: datetime
 
 class BoulderCreate(BoulderBase):
     pass

@@ -16,6 +16,7 @@ import schemas
 from models import Boulder, User
 from schemas import *
 from db import engine, Base
+from datetime import datetime
 
 from util import get_db
 app = FastAPI()
@@ -38,6 +39,7 @@ async def publish(
     location: str = Form(...),
     comment: str = Form(...),
     points: str = Form(...),  # 🆕 this will be JSON stringified list from client
+    timestamp: str = Form(...)
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(auth.get_current_user),
@@ -56,7 +58,10 @@ async def publish(
         parsed_points = json.loads(points)
     except json.JSONDecodeError:
         raise HTTPException(status_code=400, detail="Invalid JSON in points")
-
+    try:
+        parsed_timestamp = datetime.fromisoformat(timestamp)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid timestamp format. Use ISO 8601.")
     # Create boulder object
     new_boulder = Boulder(
         name=name,
@@ -66,6 +71,7 @@ async def publish(
         image_path=random_filename,
         points=parsed_points,  # ✅ store parsed points
         author_id=current_user.id,
+        timestamp=parsed_timestamp,
     )
 
     db.add(new_boulder)
@@ -82,6 +88,7 @@ def search_boulders(
     location: Optional[str] = Query(None),
     grade: Optional[int] = Query(None),
     username: Optional[str] = Query(None),
+    time: Optional[str] = Query(None),
     db: Session = Depends(get_db)
 ):
     query = db.query(Boulder).join(Boulder.author)
@@ -94,6 +101,12 @@ def search_boulders(
         query = query.filter(Boulder.grade == grade)
     if username is not None:
         query = query.filter(User.username.ilike(f"%{username}%"))
+    if time is not None:
+        try:
+            parsed_timestamp = datetime.fromisoformat(timestamp)
+            query = query.filter(Boulder.timestamp< parsed_timestamp)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid timestamp format. Use ISO 8601.")
 
     results = query.all()
 
@@ -108,6 +121,7 @@ def search_boulders(
             "image_path": f"{base_url}images/{b.image_path}",
             "points": b.points,
             "author": b.author,
+            "timestamp": b.timestamp,
         }
         for b in results
     ]
