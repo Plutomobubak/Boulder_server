@@ -59,7 +59,7 @@ async def publish(
     except json.JSONDecodeError:
         raise HTTPException(status_code=400, detail="Invalid JSON in points")
     try:
-        parsed_timestamp = datetime.fromisoformat(timestamp)
+        parsed_timestamp = datetime.fromisoformat(created_at)
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid timestamp format. Use ISO 8601.")
     # Create boulder object
