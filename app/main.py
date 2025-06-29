@@ -39,7 +39,7 @@ async def publish(
     location: str = Form(...),
     comment: str = Form(...),
     points: str = Form(...),  # 🆕 this will be JSON stringified list from client
-    timestamp: str = Form(...),
+    created_at: str = Form(...),
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(auth.get_current_user),
@@ -89,7 +89,7 @@ def search_boulders(
     min_grade: Optional[int] = Query(None),
     max_grade: Optional[int] = Query(None),
     username: Optional[str] = Query(None),
-    timestamp: Optional[str] = Query(None),
+    created_at: Optional[str] = Query(None),
     db: Session = Depends(get_db)
 ):
     query = db.query(Boulder).join(User)
@@ -107,10 +107,10 @@ def search_boulders(
     if username:
         query = query.filter(User.username.ilike(f"%{username}%"))
 
-    if timestamp:
+    if created_at:
         try:
-            parsed_timestamp = datetime.fromisoformat(timestamp)
-            query = query.filter(Boulder.timestamp >= parsed_timestamp)
+            parsed_timestamp = datetime.fromisoformat(created_at)
+            query = query.filter(Boulder.created_at >= parsed_timestamp)
         except ValueError:
             raise HTTPException(status_code=400, detail="Invalid timestamp format. Use ISO 8601.")
 
@@ -127,7 +127,7 @@ def search_boulders(
             "image_path": f"{base_url}images/{b.image_path}",
             "points": b.points,
             "author": b.author,
-            "timestamp": b.timestamp,
+            "created_at": b.created_at,
         }
         for b in results
     ]

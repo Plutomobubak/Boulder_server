@@ -33,7 +33,7 @@ class BoulderBase(BaseModel):
     image_path: str
     author: UserResponse
     points: Optional[List[Dict[str, Any]]] = None
-    timestamp: datetime = Field(..., alias="created_at")
+    created_at: datetime
 
 class BoulderCreate(BoulderBase):
     pass
