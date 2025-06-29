@@ -39,7 +39,7 @@ async def publish(
     location: str = Form(...),
     comment: str = Form(...),
     points: str = Form(...),  # 🆕 this will be JSON stringified list from client
-    timestamp: str = Form(...)
+    timestamp: str = Form(...),
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(auth.get_current_user),
@@ -71,7 +71,7 @@ async def publish(
         image_path=random_filename,
         points=parsed_points,  # ✅ store parsed points
         author_id=current_user.id,
-        timestamp=parsed_timestamp,
+        created_at=parsed_timestamp,
     )
 
     db.add(new_boulder)
