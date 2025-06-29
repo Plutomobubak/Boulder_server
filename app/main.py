@@ -86,25 +86,31 @@ def search_boulders(
     request: Request,
     name: Optional[str] = Query(None),
     location: Optional[str] = Query(None),
-    grade: Optional[int] = Query(None),
+    min_grade: Optional[int] = Query(None),
+    max_grade: Optional[int] = Query(None),
     username: Optional[str] = Query(None),
-    time: Optional[str] = Query(None),
+    timestamp: Optional[str] = Query(None),
     db: Session = Depends(get_db)
 ):
-    query = db.query(Boulder).join(Boulder.author)
+    query = db.query(Boulder).join(User)
 
     if name:
         query = query.filter(Boulder.name.ilike(f"%{name}%"))
     if location:
         query = query.filter(Boulder.location.ilike(f"%{location}%"))
-    if grade is not None:
-        query = query.filter(Boulder.grade == grade)
-    if username is not None:
+
+    if min_grade is not None:
+        query = query.filter(Boulder.grade >= min_grade)
+    if max_grade is not None:
+        query = query.filter(Boulder.grade <= max_grade)
+
+    if username:
         query = query.filter(User.username.ilike(f"%{username}%"))
-    if time is not None:
+
+    if timestamp:
         try:
             parsed_timestamp = datetime.fromisoformat(timestamp)
-            query = query.filter(Boulder.timestamp< parsed_timestamp)
+            query = query.filter(Boulder.timestamp >= parsed_timestamp)
         except ValueError:
             raise HTTPException(status_code=400, detail="Invalid timestamp format. Use ISO 8601.")
 
